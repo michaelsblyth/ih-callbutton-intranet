@@ -1,6 +1,7 @@
 const $ = (s) => document.querySelector(s);
 const siteEl = $("#site");
 const joinBtn = $("#join");
+const statusEl = $("#status");
 const queueEl = $("#queue");
 const overlayEl = $("#overlay");
 const roomEl = $("#room");
@@ -8,27 +9,39 @@ const timeEl = $("#time");
 const countEl = $("#count");
 const ackBtn = $("#ack");
 
-const socket = io();
+const socket = io({ transports: ["websocket"] });
 const queue = []; // newest first
 let current = null;
 let chimeTimer = null;
 
+function normSite(val){
+  return String(val || "").toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
 function joinSite(){
-  const site = siteEl.value.trim();
-  if (!site) return alert("Enter site");
+  const site = normSite(siteEl.value);
+  if (!site) {
+    statusEl.textContent = "Please select a site, then Join.";
+    statusEl.style.color = "#b91c1c";
+    return;
+  }
   socket.emit("join", { site });
   joinBtn.textContent = "Joined";
   joinBtn.disabled = true;
+  statusEl.textContent = `Joined to site: ${site}`;
+  statusEl.style.color = "";
 }
 
 function renderQueue(){
   queueEl.innerHTML = "";
   queue.forEach((item) => {
     const li = document.createElement("li");
-    li.innerHTML = \`
-      <div><strong>Room \${item.room}</strong> <span class="meta">\${new Date(item.ts).toLocaleTimeString()}</span></div>
-      <button data-id="\${item.id}" data-room="\${item.room}">ACK</button>
-    \`;
+    li.innerHTML = `
+      <div><strong>Room ${item.room}</strong>
+        <span class="meta">${new Date(item.ts).toLocaleTimeString()}</span>
+      </div>
+      <button data-id="${item.id}" data-room="${item.room}">ACK</button>
+    `;
     li.querySelector("button").addEventListener("click", (e) => {
       const id = e.target.getAttribute("data-id");
       const room = e.target.getAttribute("data-room");
@@ -64,7 +77,7 @@ function showOverlay(item){
   current = item;
   roomEl.textContent = "ROOM " + item.room;
   timeEl.textContent = new Date(item.ts).toLocaleTimeString();
-  countEl.textContent = queue.length ? \`(+\${queue.length} more)\` : "";
+  countEl.textContent = queue.length ? `(+${queue.length} more)` : "";
   overlayEl.classList.remove("hidden");
   startChime();
 }
@@ -73,13 +86,19 @@ function hideOverlay(){
   stopChime();
 }
 
-// Socket events
+// Socket events with visible status
+socket.on("connect", () => { statusEl.textContent = "Connected. Choose site and press Join."; });
+socket.on("disconnect", () => { statusEl.textContent = "Disconnected. Check network."; });
+
 socket.on("call", (data) => {
+  // newest first for overlay
   if (!current){ showOverlay(data); }
-  else { queue.unshift(data); countEl.textContent = \`(+\${queue.length} more)\`; }
+  else { queue.unshift(data); countEl.textContent = `(+${queue.length} more)`; }
+  // newest first in list
   queue.unshift(data);
   renderQueue();
 });
+
 socket.on("ack", (data) => {
   const idx = queue.findIndex(x => x.id === data.id);
   if (idx >= 0){ queue.splice(idx, 1); renderQueue(); }
@@ -87,7 +106,7 @@ socket.on("ack", (data) => {
     if (queue.length){ const next = queue.shift(); showOverlay(next); renderQueue(); }
     else { current = null; hideOverlay(); }
   } else {
-    countEl.textContent = queue.length ? \`(+\${queue.length} more)\` : "";
+    countEl.textContent = queue.length ? `(+${queue.length} more)` : "";
   }
 });
 

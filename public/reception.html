@@ -9,10 +9,21 @@
 <body>
   <div class="container">
     <h1>Reception Console</h1>
+
     <div class="grid">
-      <label>Site <input id="site" placeholder="LAumone" /></label>
+      <label>Site
+        <select id="site">
+          <option value="">Select site…</option>
+          <option value="LAUMONE">L’Aumone</option>
+          <option value="STSAMPSONS">St Sampson’s</option>
+          <option value="TOWN">Town</option>
+        </select>
+      </label>
       <button id="join">Join</button>
     </div>
+
+    <p id="status" class="muted">Not joined.</p>
+
     <div id="overlay" class="overlay hidden">
       <div class="panel">
         <div class="title">Please call patient to</div>
@@ -24,10 +35,11 @@
         </div>
       </div>
     </div>
+
     <h2>Queue</h2>
     <ul id="queue"></ul>
   </div>
-  <audio id="beep" preload="auto"></audio>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/reception.js"></script>
 </body>

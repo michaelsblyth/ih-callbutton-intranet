@@ -10,14 +10,35 @@
   <div class="container">
     <h1>Doctor Console</h1>
     <div class="grid">
-      <label>Site <input id="site" placeholder="LAumone" /></label>
-      <label>Room <input id="room" placeholder="3" /></label>
+      <label>Site
+        <select id="site">
+          <option value="">Select site…</option>
+          <option value="LAUMONE">L’Aumone</option>
+          <option value="STSAMPSONS">St Sampson’s</option>
+          <option value="TOWN">Town</option>
+        </select>
+      </label>
+
+      <label>Room
+        <select id="room">
+          <option value="">Select room…</option>
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+          <option>5</option><option>6</option><option>7</option><option>8</option>
+          <option>9</option><option>10</option>
+        </select>
+      </label>
     </div>
+
     <div class="row">
       <button id="call">Call Patient Now</button>
     </div>
-    <p class="muted">Or trigger via HTTP: <code>/call?site=LAumone&room=3&token=SECRET</code></p>
+
+    <p class="muted">
+      Or trigger via HTTP (for Stream Deck / shortcuts):<br />
+      <code id="exampleUrl">/call?site=LAUMONE&room=3&token=SECRET</code>
+    </p>
   </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/doctor.js"></script>
 </body>
