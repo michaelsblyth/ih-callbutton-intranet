@@ -18,7 +18,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
+// Static files
 app.use(express.static(path.join(__dirname, "public")));
 
 // Health
@@ -57,35 +57,12 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => console.log("IH CallButton listening on", PORT));
+server.listen(PORT, () => {
+  console.log("IH CallButton listening on", PORT);
+});
 
 // helpers
 function siteRoom(site) { return `site:${site}`; }
-function uid() { return (Date.now().toString(36) + Math.random().toString(36).slice(2,10)).toUpperCase(); }});
-
-// Sockets (reception live, optional doctor)
-io.on("connection", (socket) => {
-  socket.on("join", ({ site }) => {
-    if (!site) return;
-    socket.join(siteRoom(site));
-    socket.data.site = site;
-  });
-
-  socket.on("call", ({ site, room }) => {
-    if (!site || !room) return;
-    const payload = { id: id(), site, room, ts: Date.now() };
-    io.to(siteRoom(site)).emit("call", payload);
-  });
-
-  socket.on("ack", ({ id: callId, room }) => {
-    const site = socket.data.site;
-    if (!site || !callId || !room) return;
-    const payload = { id: callId, room, ts: Date.now() };
-    io.to(siteRoom(site)).emit("ack", payload);
-  });
-});
-
-server.listen(PORT, () => console.log("IH CallButton listening on", PORT));
-
-function siteRoom(site) { return `site:${site}`; }
-function id() { return (Date.now().toString(36) + Math.random().toString(36).slice(2,10)).toUpperCase(); }
+function uid() {
+  return (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).toUpperCase();
+}
