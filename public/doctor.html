@@ -9,23 +9,18 @@
 <body>
   <div class="container">
     <h1>Doctor Console</h1>
+
     <div class="grid">
       <label>Site
-        <select id="site">
-          <option value="">Select site…</option>
-          <option value="LAUMONE">L’Aumone</option>
-          <option value="STSAMPSONS">St Sampson’s</option>
-          <option value="TOWN">Town</option>
-        </select>
+        <select id="site"></select>
       </label>
 
       <label>Room
-        <select id="room">
-          <option value="">Select room…</option>
-          <option>1</option><option>2</option><option>3</option><option>4</option>
-          <option>5</option><option>6</option><option>7</option><option>8</option>
-          <option>9</option><option>10</option>
-        </select>
+        <select id="room"><option value="">Select room…</option></select>
+      </label>
+
+      <label>Call token (from server env)
+        <input id="token" placeholder="SHARED_SECRET" />
       </label>
     </div>
 
@@ -34,12 +29,12 @@
     </div>
 
     <p class="muted">
-      Or trigger via HTTP (for Stream Deck / shortcuts):<br />
-      <code id="exampleUrl">/call?site=LAUMONE&room=3&token=SECRET</code>
+      Tip: save this page as a browser app (PWA) and pin it. Doctors only need to pick their room once.
     </p>
+
+    <p class="muted"><strong>Example trigger URL:</strong> <code id="exampleUrl"></code></p>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/doctor.js"></script>
+  <script type="module" src="/doctor.js"></script>
 </body>
 </html>

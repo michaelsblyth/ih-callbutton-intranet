@@ -1,5 +1,7 @@
+import { SITES, normSiteId, siteById } from "./config.js";
+
 const $ = (s) => document.querySelector(s);
-const siteEl = $("#site");
+const siteSel = $("#site");
 const joinBtn = $("#join");
 const statusEl = $("#status");
 const queueEl = $("#queue");
@@ -9,26 +11,33 @@ const timeEl = $("#time");
 const countEl = $("#count");
 const ackBtn = $("#ack");
 
-const socket = io({ transports: ["websocket"] });
+// Let Socket.IO pick the best transport (no forcing websockets)
+const socket = io();
 const queue = []; // newest first
 let current = null;
 let chimeTimer = null;
 
-function normSite(val){
-  return String(val || "").toUpperCase().replace(/[^A-Z0-9]/g,"");
+// Populate sites
+function fillSites() {
+  siteSel.innerHTML = '<option value="">Select site…</option>' +
+    SITES.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
+  // restore previous if any
+  const saved = localStorage.getItem("rx_site") || "";
+  if (saved) siteSel.value = saved;
 }
 
 function joinSite(){
-  const site = normSite(siteEl.value);
-  if (!site) {
+  const siteId = normSiteId(siteSel.value);
+  if (!siteId) {
     statusEl.textContent = "Please select a site, then Join.";
     statusEl.style.color = "#b91c1c";
     return;
   }
-  socket.emit("join", { site });
+  socket.emit("join", { site: siteId });
+  localStorage.setItem("rx_site", siteId);
   joinBtn.textContent = "Joined";
   joinBtn.disabled = true;
-  statusEl.textContent = `Joined to site: ${site}`;
+  statusEl.textContent = `Joined to site: ${siteId}`;
   statusEl.style.color = "";
 }
 
@@ -86,15 +95,14 @@ function hideOverlay(){
   stopChime();
 }
 
-// Socket events with visible status
-socket.on("connect", () => { statusEl.textContent = "Connected. Choose site and press Join."; });
-socket.on("disconnect", () => { statusEl.textContent = "Disconnected. Check network."; });
+// Socket status
+socket.on("connect", () => { statusEl.textContent = "Connected. Choose site and press Join."; statusEl.style.color = ""; });
+socket.on("disconnect", () => { statusEl.textContent = "Disconnected. Check network."; statusEl.style.color = "#b91c1c"; });
 
+// Events
 socket.on("call", (data) => {
-  // newest first for overlay
   if (!current){ showOverlay(data); }
   else { queue.unshift(data); countEl.textContent = `(+${queue.length} more)`; }
-  // newest first in list
   queue.unshift(data);
   renderQueue();
 });
@@ -110,7 +118,7 @@ socket.on("ack", (data) => {
   }
 });
 
-// UI events
+// UI
 joinBtn.addEventListener("click", joinSite);
 ackBtn.addEventListener("click", () => {
   if (!current) return;
@@ -122,3 +130,6 @@ window.addEventListener("keydown", (e) => {
   }
   if (e.code === "Escape"){ stopChime(); } // mute
 });
+
+// Init
+fillSites();
