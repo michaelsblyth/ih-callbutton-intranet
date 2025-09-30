@@ -1,4 +1,4 @@
-import { SITES, ROOMS, normSiteId, siteById } from "./config.js";
+import { SITES, ROOMS, normSiteId } from "./config.js?v=4";
 
 const $ = (s) => document.querySelector(s);
 const siteSel = $("#site");
@@ -7,20 +7,17 @@ const tokenEl = $("#token");
 const callBtn = $("#call");
 const example = $("#exampleUrl");
 
-// Populate site dropdown
 function fillSites() {
   siteSel.innerHTML = '<option value="">Select site…</option>' +
     SITES.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
 }
 
-// Populate rooms for a given site id
 function fillRooms(siteId) {
   const rooms = ROOMS[siteId] || [];
   roomSel.innerHTML = '<option value="">Select room…</option>' +
     rooms.map(r => `<option value="${r}">${r}</option>`).join("");
 }
 
-// Persist selections locally
 function saveLocal() {
   localStorage.setItem("doc_site", siteSel.value || "");
   localStorage.setItem("doc_room", roomSel.value || "");
@@ -30,6 +27,7 @@ function loadLocal() {
   const s = localStorage.getItem("doc_site") || "";
   const r = localStorage.getItem("doc_room") || "";
   const t = localStorage.getItem("doc_token") || "";
+  fillSites();
   if (s) siteSel.value = s;
   fillRooms(siteSel.value || "");
   if (r) roomSel.value = r;
@@ -46,17 +44,15 @@ function updateExample() {
 
 siteSel.addEventListener("change", () => { fillRooms(siteSel.value); saveLocal(); updateExample(); });
 roomSel.addEventListener("change", () => { saveLocal(); updateExample(); });
-tokenEl.addEventListener("input", () => { saveLocal(); updateExample(); });
+tokenEl.addEventListener("input",   () => { saveLocal(); updateExample(); });
 
-// Button: call via HTTP (works even if sockets are grumpy)
 callBtn.addEventListener("click", async () => {
   const siteId = normSiteId(siteSel.value);
   const room = roomSel.value;
   const token = tokenEl.value.trim();
   if (!siteId) return alert("Choose a site");
-  if (!room) return alert("Choose a room");
-  if (!token) return alert("Enter the call token (SHARED_SECRET)");
-
+  if (!room)   return alert("Choose a room");
+  if (!token)  return alert("Enter the call token (SHARED_SECRET)");
   try {
     const res = await fetch(`/call?site=${siteId}&room=${encodeURIComponent(room)}&token=${encodeURIComponent(token)}`);
     const data = await res.json();
@@ -65,4 +61,6 @@ callBtn.addEventListener("click", async () => {
   } catch (e) {
     alert("Call failed: " + (e?.message || e));
   }
-}
+});
+
+loadLocal();
