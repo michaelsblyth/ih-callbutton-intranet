@@ -18,10 +18,6 @@
       <label>Room
         <select id="room"><option value="">Select room…</option></select>
       </label>
-
-      <label>Call token (from server env)
-        <input id="token" placeholder="SHARED_SECRET" />
-      </label>
     </div>
 
     <div class="row">
@@ -29,9 +25,9 @@
     </div>
 
     <p class="muted">Tip: save this page as a browser app (PWA) and pin it.</p>
-    <p class="muted"><strong>Example trigger URL:</strong> <code id="exampleUrl"></code></p>
   </div>
 
-  <script type="module" src="/doctor.js?v=4"></script>
+  <!-- Loads /doctor.js which imports /config.js -->
+  <script type="module" src="/doctor.js?v=5"></script>
 </body>
 </html>
