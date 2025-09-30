@@ -1,4 +1,4 @@
-const CACHE = "ih-call-v1";
+const CACHE = "ih-call-v3";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll([
     "/", "/index.html", "/styles.css", "/doctor.html", "/doctor.js", "/reception.html", "/reception.js"
