@@ -1,0 +1,17 @@
+{
+  "name": "ih-callbutton-intranet",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Intranet-hosted Virtual Call Button (Socket.IO + ACK)",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "socket.io": "^4.7.5"
+  }
+}
