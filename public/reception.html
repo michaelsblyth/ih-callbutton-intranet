@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reception Console</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Reception Console</h1>
+    <div class="grid">
+      <label>Site <input id="site" placeholder="LAumone" /></label>
+      <button id="join">Join</button>
+    </div>
+    <div id="overlay" class="overlay hidden">
+      <div class="panel">
+        <div class="title">Please call patient to</div>
+        <div class="room" id="room">—</div>
+        <div class="meta" id="time"></div>
+        <div class="row">
+          <button id="ack">Acknowledge (Enter/Space)</button>
+          <div class="count" id="count"></div>
+        </div>
+      </div>
+    </div>
+    <h2>Queue</h2>
+    <ul id="queue"></ul>
+  </div>
+  <audio id="beep" preload="auto"></audio>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/reception.js"></script>
+</body>
+</html>

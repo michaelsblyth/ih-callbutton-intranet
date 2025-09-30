@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Doctor Console</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Doctor Console</h1>
+    <div class="grid">
+      <label>Site <input id="site" placeholder="LAumone" /></label>
+      <label>Room <input id="room" placeholder="3" /></label>
+    </div>
+    <div class="row">
+      <button id="call">Call Patient Now</button>
+    </div>
+    <p class="muted">Or trigger via HTTP: <code>/call?site=LAumone&room=3&token=SECRET</code></p>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/doctor.js"></script>
+</body>
+</html>
